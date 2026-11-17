@@ -119,8 +119,6 @@
     // rótulos contextuais e áreas escuras
     $$(".flip").forEach((el) => (el.dataset.cursor = "Virar"));
     $$(".read").forEach((el) => (el.dataset.cursor = "Ler"));
-    $(".hero-visual") && ($(".hero-visual").dataset.cursor = "Clique");
-    $(".orbit") && ($(".orbit").dataset.cursor = "Role");
     $(".ritual-scene") && ($(".ritual-scene").dataset.cursor = "Ritual");
     $$(".trust, .section--night, .mid-cta, .final, .footer, .vmarquee--dark").forEach((el) => el.setAttribute("data-dark", ""));
 

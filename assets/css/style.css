@@ -680,3 +680,20 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
 @media (max-width:959px){ .hero .eyebrow{margin-top:0} }
 @media (min-width:960px){ .chip-2{right:-2%;top:26%} .chip-1{left:2%;top:18%} .chip-3{left:4%;bottom:14%} }
 .hero-copy{z-index:7}
+
+/* ---- Topo: selos sempre na frente do frasco, sem cobrir o rótulo ---- */
+@keyframes float-t{0%,100%{translate:0 0}50%{translate:0 -10px}}
+@media (min-width:960px){
+  .float-chip{animation-name:float-t;transform:translateZ(120px);z-index:3;white-space:nowrap}
+  .hero-bottle{z-index:1}
+  .chip-1{left:-6%;top:14%}
+  .chip-2{right:-8%;top:30%}
+  .chip-3{left:-4%;bottom:12%}
+}
+
+/* ---- Cursor: rótulo vira etiqueta ao lado da seta, nunca em cima do conteúdo ---- */
+.c-label{position:absolute;left:50%;top:50%;margin:16px 0 0 18px;background:var(--bordo);color:var(--creme);padding:6px 11px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(42,15,23,.5);border:1px solid var(--dourado);font-size:10.5px}
+.cursor.is-label .c-ring{width:46px;height:46px;margin:-23px 0 0 -23px;background:rgba(217,122,140,.12);border-color:var(--dourado)}
+.cursor.is-label .c-dot{opacity:1}
+.cursor.is-light.is-label .c-ring{background:rgba(253,246,241,.12)}
+.cursor.is-light .c-label{background:var(--creme);color:var(--bordo)}

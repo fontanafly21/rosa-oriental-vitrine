@@ -661,3 +661,22 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
 .dots a:hover span{opacity:1;transform:translate(0,-50%)}
 .dots.on-dark a{border-color:var(--petala)}
 .dots.on-dark a.is-on{background:var(--petala)}
+
+/* =====================================================================
+   IMAGENS REAIS (frasco e logo)
+   ===================================================================== */
+.hero-logo{display:block;height:34px;width:auto;margin:0 0 14px}
+.hero-bottle-mini{height:auto;object-fit:contain}
+.orbit-bottle{height:auto;object-fit:contain}
+.kit-bottles img{width:auto;height:100px;margin:0 -11px;filter:drop-shadow(0 8px 8px rgba(92,34,49,.22));transition:transform .5s var(--ease);position:relative}
+.kit-bottles img.is-bonus{filter:drop-shadow(0 0 10px rgba(201,160,92,.95))}
+.kit:hover .kit-bottles img{transform:translateY(-6px)}
+.kit:hover .kit-bottles img:nth-child(even){transform:translateY(-10px) rotate(4deg)}
+.kit-bottles[data-count="6"] img{height:88px;margin:0 -13px}
+@media (min-width:960px){
+  .hero-logo{height:48px;margin-bottom:20px}
+  .hero-bottle{width:250px;height:auto}
+}
+@media (max-width:959px){ .hero .eyebrow{margin-top:0} }
+@media (min-width:960px){ .chip-2{right:-2%;top:26%} .chip-1{left:2%;top:18%} .chip-3{left:4%;bottom:14%} }
+.hero-copy{z-index:7}

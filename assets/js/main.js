@@ -287,7 +287,7 @@
     let html = "";
     for (let i = 0; i < n; i++) {
       const isBonus = bonus && i === n - 1;
-      html += `<svg class="${isBonus ? "is-bonus" : ""}" style="z-index:${n - Math.abs(i - (n - 1) / 2)}"><use href="#bottle"/></svg>`;
+      html += `<img class="${isBonus ? "is-bonus" : ""}" src="assets/img/frasco-sm.webp" width="147" height="280" alt="" style="z-index:${Math.round(n - Math.abs(i - (n - 1) / 2))}">`;
     }
     if (bonus) html += `<span class="bonus-tag">+1 brinde</span>`;
     box.innerHTML = html;

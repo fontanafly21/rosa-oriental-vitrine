@@ -160,7 +160,7 @@
      4. SPOTLIGHT — brilho que segue o mouse dentro dos cards
      --------------------------------------------------------------- */
   if (fine) {
-    $$(".flip-front, .kit, .cmp-card, .step, .tl-step, .checklist, .label-note, .bars, .faq-item, .read, .quiz-card, .mid-cta")
+    $$(".flip-front, .kit, .up-card, .cmp-card, .step, .tl-step, .checklist, .label-note, .bars, .faq-item, .read, .quiz-card, .mid-cta")
       .forEach((el) => el.classList.add("spot"));
     document.addEventListener("pointermove", (e) => {
       const el = e.target.closest?.(".spot");

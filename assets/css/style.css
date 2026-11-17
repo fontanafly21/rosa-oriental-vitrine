@@ -697,3 +697,31 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
 .cursor.is-label .c-dot{opacity:1}
 .cursor.is-light.is-label .c-ring{background:rgba(253,246,241,.12)}
 .cursor.is-light .c-label{background:var(--creme);color:var(--bordo)}
+
+/* =====================================================================
+   UPSELL — kits para a recompra
+   ===================================================================== */
+.upsell{margin-top:56px;padding-top:44px;border-top:1px dashed rgba(201,160,92,.6)}
+.upsell-head{text-align:center;max-width:720px;margin:0 auto 30px}
+.upsell-head h3{font-family:var(--f-title);font-size:clamp(26px,4.4vw,36px);font-weight:600;line-height:1.15;margin-bottom:10px}
+.upsell-head p:not(.eyebrow){font-size:16px;margin:0}
+.upsell-grid{display:grid;gap:20px}
+.up-card{position:relative;background:#fff;border:1px solid var(--petala);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);transition:transform .45s var(--ease),box-shadow .45s}
+.up-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.up-card--gift{border:2px solid var(--dourado)}
+.up-seal{position:absolute;top:14px;right:14px;z-index:2;background:linear-gradient(135deg,#E2C48A,var(--dourado));color:var(--bordo);font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:999px;box-shadow:0 6px 14px -6px rgba(164,126,63,.7)}
+.up-photo{position:relative;margin:0;aspect-ratio:1;overflow:hidden;background:var(--sakura)}
+.up-photo img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.up-card:hover .up-photo img{transform:scale(1.06)}
+.up-qty{position:absolute;left:12px;bottom:12px;background:rgba(92,34,49,.88);color:#fff;font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px)}
+.up-big{aspect-ratio:1;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 50% 40%,#fff 0%,var(--sakura) 60%,var(--petala) 100%)}
+.up-big span{font-family:var(--f-title);font-size:120px;line-height:.9;color:var(--bordo);font-weight:600}
+.up-big small{font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--rose)}
+.up-body{padding:20px;display:flex;flex-direction:column;gap:4px;flex:1}
+.up-body h4{margin:0;font-size:20px;color:var(--bordo);font-weight:800}
+.up-price{margin:2px 0 0;color:var(--rose);font-weight:700}
+.up-price b{font-size:30px;color:var(--bordo);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.up-terms{font-size:14px;margin:0 0 14px}
+.up-body .btn-wa{margin-top:auto}
+@media (min-width:760px){ .upsell-grid{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:760px) and (max-width:959px){ .up-big span{font-size:90px} }

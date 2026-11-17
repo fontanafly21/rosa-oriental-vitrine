@@ -68,6 +68,9 @@
     "kit-3+1": `${hi} e queria conversar sobre o Kit 3+1 (4 frascos).`,
     "kit-5+1": `${hi} e queria conversar sobre o Kit 5+1 (6 frascos).`,
     "kit-1": `${hi} e queria conversar sobre o Kit 1 mês.`,
+    "kit-9": `${hi} e queria conversar sobre o Kit 9 meses.`,
+    "kit-12": `${hi} e queria conversar sobre o Kit 12 meses + brinde.`,
+    "kit-16": `${hi} e queria saber do Kit 16 meses + brinde.`,
     checklist: `${hi} e queria conferir CNPJ, rastreio e garantia antes de comprar.`,
     faq: `${hi} e tenho uma dúvida que não encontrei lá:`,
     exit: `${hi}. Pode me mandar a tabela completa de custo mensal e a foto do rótulo?`,
@@ -380,7 +383,7 @@
     ["Achei mais barato no Mercado Livre", "Podem existir anúncios lá — o que é verificável é isto: garantia, brinde e suporte valem na compra pelo canal oficial. Se preferir comparar, enviamos as condições lado a lado."],
   ];
   const faqList = $("#faq-list");
-  faqList.innerHTML = FAQ.map(([q, a], i) => `
+  if (!faqList.children.length) faqList.innerHTML = FAQ.map(([q, a], i) => `
     <div class="faq-item reveal" data-q="${i}">
       <h3><button class="faq-q" aria-expanded="false" aria-controls="fa-${i}" id="fq-${i}"><span class="faq-qt">${q}</span><span class="faq-ico" aria-hidden="true"></span></button></h3>
       <div class="faq-a" id="fa-${i}" role="region" aria-labelledby="fq-${i}"><div><p class="faq-at">${a}</p></div></div>
@@ -392,7 +395,7 @@
     item.classList.toggle("is-open", open); b.setAttribute("aria-expanded", open);
     if (open) track("FaqOpen", { question: $(".faq-qt", item).textContent });
   });
-  $("#faq-schema").textContent = JSON.stringify({
+  if (!$("#faq-schema").textContent.trim()) $("#faq-schema").textContent = JSON.stringify({
     "@context": "https://schema.org", "@type": "FAQPage",
     mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
   });

@@ -88,6 +88,12 @@
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-wa]");
     if (!a) return;
+    // upsell: ao escolher um kit, mostra o kit seguinte com a conta na mesa (1x por kit por sessão)
+    if (!a.closest(".modal") && UPSELL[a.dataset.wa] && sess.get("ro_up_" + a.dataset.wa) !== "1") {
+      e.preventDefault();
+      openUpsell(a.dataset.wa);
+      return;
+    }
     a.href = waHref(a.dataset.wa); // garante UTM atual
     store.set("ro_wa_clicked", "1");
     track("Contact", { placement: a.dataset.wa });
@@ -601,6 +607,72 @@
     if (modal.open("quiz", "")) { track("PopupView", { popup: "quiz" }); render(0); }
   }
   $$("[data-open-quiz]").forEach((b) => b.addEventListener("click", openQuiz));
+
+  /* ---------- UPSELL: oferta do kit seguinte, sem pressão e com a conta completa ----------
+     Valores: tabela de kits do Dossiê (13/11/2026). Regra do Guia respeitada: do 5+1 não se
+     oferece kit de 12+ meses (primeira compra); kits grandes só aparecem a partir do 9 meses. */
+  const KIT_INFO = {
+    "kit-1":   { name: "Kit 1 mês",           frascos: 1,  price: 207,  month: 207,   img: "assets/img/kit-1.webp" },
+    "kit-3+1": { name: "Kit 3+1",             frascos: 4,  price: 347,  month: 86.75, img: null },
+    "kit-5+1": { name: "Kit 5+1",             frascos: 6,  price: 447,  month: 74.5,  img: "assets/img/kit-6.webp" },
+    "kit-9":   { name: "Kit 9 meses",         frascos: 9,  price: 697,  month: 77.44, img: "assets/img/kit-9.webp" },
+    "kit-12":  { name: "Kit 12 meses + brinde", frascos: 12, price: 897, month: 74.75, img: "assets/img/kit-12.webp", gift: true },
+    "kit-16":  { name: "Kit 16 meses + brinde", frascos: 16, price: 1097, month: 68.56, img: null, gift: true },
+  };
+  const UPSELL = {
+    "kit-1":   { to: "kit-3+1", why: "Um frasco dura 1 mês, e a marca informa o ciclo de 6-8 semanas. Com o 3+1 você cobre o ciclo inteiro e o custo por mês cai mais da metade." },
+    "kit-3+1": { to: "kit-5+1", why: "Com mais 2 frascos você chega a 6 meses de rotina e o 5+1 passa a ter o menor custo por mês entre os kits de entrada." },
+    "kit-9":   { to: "kit-12",  why: "Com mais 3 frascos você fecha 1 ano de rotina e ainda escolhe um brinde no checkout: creme ou massageador." },
+    "kit-12":  { to: "kit-16",  why: "Com mais 4 frascos o custo por mês chega ao menor valor de todos os kits — R$ 68,56." },
+  };
+  function kitVisual(k) {
+    const K = KIT_INFO[k];
+    if (K.img) return `<img src="${K.img}" alt="${K.name}" loading="lazy">`;
+    const n = Math.min(K.frascos, 6);
+    let b = "";
+    for (let i = 0; i < n; i++) b += `<img class="up-mini" src="assets/img/frasco-sm.webp" alt="">`;
+    return `<div class="up-stack">${b}${K.frascos > 6 ? `<span>${K.frascos}</span>` : ""}</div>`;
+  }
+  function openUpsell(from) {
+    const U = UPSELL[from], A = KIT_INFO[from], B = KIT_INFO[U.to];
+    const diff = B.price - A.price, extra = B.frascos - A.frascos;
+    const perExtra = diff / extra;
+    const html = `
+      <div class="upm">
+        <p class="quiz-q">Antes de fechar o ${A.name}</p>
+        <h3 id="modal-title">Quer ver uma conta melhor?</h3>
+        <div class="upm-cols">
+          <div class="upm-col">
+            <div class="upm-img">${kitVisual(from)}</div>
+            <b>${A.name}</b>
+            <span class="upm-month">${brl(A.month)}<small>/mês</small></span>
+            <span class="upm-total">${brl(A.price)} · ${A.frascos} ${A.frascos > 1 ? "frascos" : "frasco"}</span>
+          </div>
+          <div class="upm-arrow" aria-hidden="true">→</div>
+          <div class="upm-col upm-col--up">
+            <span class="upm-tag">Upgrade</span>
+            <div class="upm-img">${kitVisual(U.to)}</div>
+            <b>${B.name}</b>
+            <span class="upm-month">${brl(B.month)}<small>/mês</small></span>
+            <span class="upm-total">${brl(B.price)} · ${B.frascos} frascos${B.gift ? " + brinde" : ""}</span>
+          </div>
+        </div>
+        <p class="upm-math">São <b>+${brl(diff)}</b> por <b>${extra} ${extra > 1 ? "frascos a mais" : "frasco a mais"}</b>${B.gift && !A.gift ? " e o brinde" : ""} — ${brl(Math.round(perExtra * 100) / 100)} por frasco extra.</p>
+        <p class="upm-why">${U.why}</p>
+        <div class="modal-actions">
+          <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="${U.to}" data-upsell="accept" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Quero o ${B.name}</span></a>
+          <a class="modal-link" data-wa="${from}" data-upsell="keep" href="#" target="_blank" rel="noopener">Continuar com o ${A.name}</a>
+        </div>
+        <p class="quiz-qual">Condição vigente conforme o checkout oficial. Resultados variam de pessoa para pessoa.</p>
+      </div>`;
+    if (!modal.open("upsell:" + from, html)) return;
+    sess.set("ro_up_" + from, "1");
+    track("UpsellView", { from, to: U.to });
+    $$("[data-upsell]", $("#modal-body")).forEach((el) => el.addEventListener("click", () => {
+      track(el.dataset.upsell === "accept" ? "UpsellAccept" : "UpsellKeep", { from, to: U.to });
+      setTimeout(() => modal.close(), 150);
+    }));
+  }
 
   /* ---------- leituras (cap. 8.3) ---------- */
   const ARTICLES = {

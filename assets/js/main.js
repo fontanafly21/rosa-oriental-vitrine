@@ -41,7 +41,7 @@
   const firstName = C.firstName || "Riccardo";
   $$("[data-brand-name]").forEach((el) => { if (C.brandName) el.textContent = C.brandName; });
   $$("[data-first-name]").forEach((el) => (el.textContent = firstName));
-  if (C.brandName) document.title = `${C.brandName} | Rosa Oriental — Revenda Autorizada`;
+  if (C.brandName) document.title = `${C.brandName} | Rosa Oriental`;
   $("#year").textContent = new Date().getFullYear();
   if (C.photo) {
     const img = new Image();
@@ -372,7 +372,7 @@
     ["Qual a dose de cada ingrediente?", "A tabela nutricional completa está no rótulo do frasco — envio a foto pelo WhatsApp antes de qualquer compra."],
     ["Em quanto tempo vejo resultado?", "A marca informa 2-4 semanas para primeiros sinais e 6-8 semanas para efeitos maiores, com uso contínuo. Resultados variam de pessoa para pessoa — não prometemos data."],
     ["Quanto custa por mês?", "Do kit 5+1: R$ 74,50/mês. Do 3+1: R$ 86,75/mês. Do frasco único: R$ 207/mês (a pior conta — dizemos isso para você decidir bem)."],
-    ["Entrega mesmo? E se não chegar?", "Rastreio em até 72h pelos Correios. Se atrasar, o atendimento da revenda acompanha o caso com a plataforma até resolver — entrega, reposição ou reembolso conforme os termos."],
+    ["Entrega mesmo? E se não chegar?", "Rastreio em até 72h pelos Correios. Se atrasar, eu acompanho o caso com a plataforma até resolver — entrega, reposição ou reembolso conforme os termos."],
     ["É igual a Botox?", "Não — são categorias diferentes. Suplemento é parte de rotina e age de dentro para fora; procedimento é intervenção médica. Um não substitui o outro."],
     ["Funciona mesmo? Tem depoimento?", "Publicamos apenas depoimentos autorizados por escrito, do jeito que a cliente escreveu. E a regra vale sempre: resultados variam de pessoa para pessoa."],
     ["E se não funcionar? Reembolsa?", "A garantia que vale é a escrita no checkout — enviamos o print da tela de compra antes de você pagar. Não prometemos além do que está lá."],

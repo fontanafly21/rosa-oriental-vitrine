@@ -777,3 +777,19 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
 .lb-bar{display:flex;align-items:center;gap:18px;font-weight:800;color:var(--bordo)}
 .lb-nav{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--petala);background:#fff;color:var(--bordo);font-size:20px;font-weight:800;transition:background .2s,transform .2s}
 .lb-nav:hover{background:var(--sakura);transform:scale(1.06)}
+
+/* =====================================================================
+   PROVA SOCIAL — "Quem já recebeu"
+   ===================================================================== */
+.proof-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.proof{margin:0;position:relative}
+.proof-img{width:100%;aspect-ratio:4/5;cursor:zoom-in}
+.proof:nth-child(odd) .proof-img{transform:rotate(-1.2deg)}
+.proof:nth-child(even) .proof-img{transform:rotate(1.2deg) translateY(10px)}
+.proof .proof-img:hover{transform:rotate(0) translateY(-6px) scale(1.02)}
+.proof figcaption{position:absolute;left:10px;bottom:10px;background:rgba(92,34,49,.88);color:#fff;font-size:12.5px;font-weight:800;padding:5px 11px;border-radius:999px;pointer-events:none}
+.proof:nth-child(even) figcaption{bottom:0}
+.proof-cta{margin:34px auto 0;max-width:720px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:var(--sakura);border:1px dashed var(--dourado);border-radius:var(--r-lg);padding:22px}
+.proof-cta p{margin:0}
+@media (min-width:760px){ .proof-grid{grid-template-columns:repeat(5,1fr);gap:18px} .proof-cta{flex-direction:row;justify-content:space-between;text-align:left} }
+@media (max-width:759px){ .proof:last-child{grid-column:1 / -1;max-width:60%;justify-self:center} }

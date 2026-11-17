@@ -76,6 +76,7 @@
     exit: `${hi}. Pode me mandar a tabela completa de custo mensal e a foto do rótulo?`,
     lembrete: `${hi} de novo e fiquei com uma dúvida sobre os kits.`,
     welcome: `${hi} e queria falar direto com você.`,
+    foto: `${hi}. Recebi meu Rosa Oriental e quero mandar minha foto (autorizo usar no site).`,
   };
   const waHref = (key) => {
     const text = (MSG[key] || MSG.default) + utmRef();

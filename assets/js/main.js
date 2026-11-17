@@ -633,6 +633,40 @@
     for (let i = 0; i < n; i++) b += `<img class="up-mini" src="assets/img/frasco-sm.webp" alt="">`;
     return `<div class="up-stack">${b}${K.frascos > 6 ? `<span>${K.frascos}</span>` : ""}</div>`;
   }
+  /* ---------- galeria de fotos reais: foto ampliada com navegação ---------- */
+  (function gallery() {
+    const seen = new Set();
+    const photos = $$(".gal-item[data-full]").filter((el) => !seen.has(el.dataset.full) && seen.add(el.dataset.full))
+      .map((el) => ({ src: el.dataset.full, alt: $("img", el).alt }));
+    if (!photos.length) return;
+    let cur = 0;
+    function show(i) {
+      const n = photos.length;
+      cur = ((i % n) + n) % n;
+      const p = photos[cur];
+      const html = `<div class="lb"><h3 id="modal-title" class="sr">Foto ${cur + 1} de ${n}</h3>
+        <img src="${p.src}" alt="${p.alt}">
+        <div class="lb-bar"><button class="lb-nav" type="button" data-lb="-1" aria-label="Foto anterior">←</button>
+        <span>${cur + 1} / ${n}</span>
+        <button class="lb-nav" type="button" data-lb="1" aria-label="Próxima foto">→</button></div></div>`;
+      if (modal.current === "galeria") $("#modal-body").innerHTML = html;
+      else if (!modal.open("galeria", html, true)) return;
+      $$("[data-lb]", $("#modal-body")).forEach((b) => (b.onclick = () => show(cur + Number(b.dataset.lb))));
+    }
+    document.addEventListener("click", (e) => {
+      const it = e.target.closest(".gal-item");
+      if (!it) return;
+      const idx = photos.findIndex((p) => p.src === it.dataset.full);
+      show(idx);
+      track("GalleryOpen", { photo: idx + 1 });
+    });
+    addEventListener("keydown", (e) => {
+      if (modal.current !== "galeria") return;
+      if (e.key === "ArrowRight") show(cur + 1);
+      if (e.key === "ArrowLeft") show(cur - 1);
+    });
+  })();
+
   function openUpsell(from) {
     const U = UPSELL[from], A = KIT_INFO[from], B = KIT_INFO[U.to];
     const diff = B.price - A.price, extra = B.frascos - A.frascos;

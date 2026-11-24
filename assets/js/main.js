@@ -101,6 +101,19 @@
     if (a.closest(".modal")) track("PopupConvert", { popup: modal.current || "?" });
   });
 
+  /* ---------- âncoras internas: rolam até a seção sem gravar "#" no endereço
+     (com "#" no link, quem reabre ou compartilha a página cai no meio dela) ---------- */
+  document.addEventListener("click", (e) => {
+    if (window.__lenis) return; // fx.js cuida do scroll suave no desktop
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute("href");
+    const target = id.length > 1 && document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    setTimeout(() => target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 60);
+  });
+
   /* ---------- links do checkout oficial (config.js → checkout) ---------- */
   const CK = C.checkout || {};
   const buyHref = (key) => {

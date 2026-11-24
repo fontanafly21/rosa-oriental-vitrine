@@ -42,7 +42,7 @@ window.SITE_CONFIG = {
   // (checkouts com pixel, doc "CHECKOUTS - ROSA ORIENTAL (COM PIXEL)").
   // Kit sem link no provider escolhido usa o link da outra lista.
   checkout: {
-    provider: "braip",
+    provider: "payt",
     braip: {
       m1:   "https://ev.braip.com/ref?pl=plawe080&ck=cheze5we&af=afi659z0j3", // 1 mês
       m2:   "https://ev.braip.com/ref?pl=pla1l198&ck=cheze5we&af=afi659z0j3", // 2 meses

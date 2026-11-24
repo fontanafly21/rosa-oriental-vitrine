@@ -32,7 +32,7 @@
   function track(name, params = {}) {
     window.dataLayer.push({ event: name, ...params });
     if (typeof window.fbq === "function") {
-      const std = ["PageView", "Contact"];
+      const std = ["PageView", "Contact", "InitiateCheckout"];
       window.fbq(std.includes(name) ? "track" : "trackCustom", name, params);
     }
   }
@@ -99,6 +99,37 @@
     store.set("ro_wa_clicked", "1");
     track("Contact", { placement: a.dataset.wa });
     if (a.closest(".modal")) track("PopupConvert", { popup: modal.current || "?" });
+  });
+
+  /* ---------- links do checkout oficial (config.js → checkout) ---------- */
+  const CK = C.checkout || {};
+  const buyHref = (key) => {
+    const main = CK.provider === "payt" ? CK.payt : CK.braip;
+    const alt = CK.provider === "payt" ? CK.braip : CK.payt;
+    const url = (main && main[key]) || (alt && alt[key]) || "";
+    if (!url) return "";
+    const add = [];
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => {
+      const v = qs.get(k) || sess.get(k);
+      if (v) add.push(`${k}=${encodeURIComponent(v)}`);
+    });
+    ["src", "sck", "fbclid", "gclid"].forEach((k) => { if (qs.get(k)) add.push(`${k}=${encodeURIComponent(qs.get(k))}`); });
+    return add.length ? url + (url.includes("?") ? "&" : "?") + add.join("&") : url;
+  };
+  function bindBuy(root = document) {
+    $$("[data-buy]", root).forEach((a) => {
+      const href = buyHref(a.dataset.buy);
+      if (href) a.href = href; else a.hidden = true;
+    });
+  }
+  bindBuy();
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-buy]");
+    if (!a) return;
+    const href = buyHref(a.dataset.buy);
+    if (!href) { e.preventDefault(); return; }
+    a.href = href;
+    track("InitiateCheckout", { kit: a.dataset.buy, placement: a.closest(".modal") ? "modal" : a.closest(".allkits") ? "lista" : "card" });
   });
 
   /* ---------- janela de atendimento real (cap. 6.1) ---------- */
@@ -545,11 +576,11 @@
     { q: "Para investimento, faz mais sentido pensar…", k: "orcamento", o: [["mes", "Por mês"], ["completo", "No tratamento completo de uma vez"], ["pequeno", "Começar pequeno"]] },
   ];
   const KITS = {
-    "3+1": { name: "Kit 3+1", sub: "4 frascos · 4 meses", month: "R$ 86,75 por mês", wa: "kit-3+1",
+    "3+1": { name: "Kit 3+1", sub: "4 frascos · 4 meses", month: "R$ 86,75 por mês", wa: "kit-3+1", buy: "k4",
       why: "Você pensa por mês — e o 3+1 é a melhor história de valor nessa lógica: R$ 347 divididos em 4 meses, cobrindo o ciclo de 6-8 semanas informado pela marca." },
-    "5+1": { name: "Kit 5+1", sub: "6 frascos · 6 meses", month: "R$ 74,50 por mês", wa: "kit-5+1",
+    "5+1": { name: "Kit 5+1", sub: "6 frascos · 6 meses", month: "R$ 74,50 por mês", wa: "kit-5+1", buy: "k6",
       why: "Se faz sentido resolver de uma vez, o 5+1 tem o menor custo mensal entre os três (menos de R$ 2,50 por dia) — sem precisar ir para um kit de 12 meses na primeira compra." },
-    "1": { name: "Kit 1 mês", sub: "1 frasco", month: "R$ 207 por mês", wa: "kit-1",
+    "1": { name: "Kit 1 mês", sub: "1 frasco", month: "R$ 207 por mês", wa: "kit-1", buy: "m1",
       why: "Começar pequeno é uma escolha válida. Só com transparência: é a pior conta por mês, e um frasco não cobre o ciclo de 6-8 semanas informado pela marca. Para comparar, o 3+1 sai R$ 86,75/mês." },
   };
   const ROT = {
@@ -588,9 +619,10 @@
         <p class="quiz-qual">Resultados variam de pessoa para pessoa. Suplemento não substitui alimentação equilibrada nem acompanhamento profissional.</p>
         <p style="margin:16px 0 10px"><b>Quer conversar sobre esse kit?</b></p>
         <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="${K.wa}" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Conversar no WhatsApp</span></a>
+        <a class="btn-buy" data-buy="${K.buy}" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Comprar no checkout oficial</span></a>
         <button class="quiz-redo" type="button" id="quiz-redo">Refazer o quiz</button>
       </div>`;
-      bindWa(body);
+      bindWa(body); bindBuy(body);
       $("#quiz-redo").onclick = () => render(0);
       track("QuizComplete", { kit: key, ...ans });
       if (!reduced) {
@@ -620,6 +652,7 @@
     "kit-12":  { name: "Kit 12 meses + brinde", frascos: 12, price: 897, month: 74.75, img: "assets/img/kit-12.webp", gift: true },
     "kit-16":  { name: "Kit 16 meses + brinde", frascos: 16, price: 1097, month: 68.56, img: null, gift: true },
   };
+  const BUY_KEY = { "kit-1": "m1", "kit-3+1": "k4", "kit-5+1": "k6", "kit-9": "m9" };
   const UPSELL = {
     "kit-1":   { to: "kit-3+1", why: "Um frasco dura 1 mês, e a marca informa o ciclo de 6-8 semanas. Com o 3+1 você cobre o ciclo inteiro e o custo por mês cai mais da metade." },
     "kit-3+1": { to: "kit-5+1", why: "Com mais 2 frascos você chega a 6 meses de rotina e o 5+1 passa a ter o menor custo por mês entre os kits de entrada." },
@@ -696,12 +729,14 @@
         <p class="upm-why">${U.why}</p>
         <div class="modal-actions">
           <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="${U.to}" data-upsell="accept" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Quero o ${B.name}</span></a>
+          ${BUY_KEY[U.to] ? `<a class="btn-buy" data-buy="${BUY_KEY[U.to]}" data-upsell="accept" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Comprar o ${B.name} no checkout</span></a>` : ""}
           <a class="modal-link" data-wa="${from}" data-upsell="keep" href="#" target="_blank" rel="noopener">Continuar com o ${A.name}</a>
         </div>
         <p class="quiz-qual">Condição vigente conforme o checkout oficial. Resultados variam de pessoa para pessoa.</p>
       </div>`;
     if (!modal.open("upsell:" + from, html)) return;
     sess.set("ro_up_" + from, "1");
+    bindBuy($("#modal-body"));
     track("UpsellView", { from, to: U.to });
     $$("[data-upsell]", $("#modal-body")).forEach((el) => el.addEventListener("click", () => {
       track(el.dataset.upsell === "accept" ? "UpsellAccept" : "UpsellKeep", { from, to: U.to });

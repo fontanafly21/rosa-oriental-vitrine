@@ -793,3 +793,35 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
 .proof-cta p{margin:0}
 @media (min-width:760px){ .proof-grid{grid-template-columns:repeat(5,1fr);gap:18px} .proof-cta{flex-direction:row;justify-content:space-between;text-align:left} }
 @media (max-width:759px){ .proof:last-child{grid-column:1 / -1;max-width:60%;justify-self:center} }
+
+/* =====================================================================
+   CHECKOUT OFICIAL — botões de compra direta e lista com todos os kits
+   ===================================================================== */
+.btn-buy{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;margin-top:10px;padding:12px 18px;border-radius:14px;border:2px solid var(--bordo);background:#fff;color:var(--bordo);font-weight:800;font-size:15.5px;text-decoration:none;transition:background .25s,color .25s,transform .25s var(--ease)}
+.btn-buy svg{width:20px;height:20px;flex:none}
+.btn-buy:hover{background:var(--bordo);color:#fff;transform:translateY(-2px)}
+.btn-buy:active{transform:translateY(0) scale(.98)}
+.btn-buy:focus-visible{outline:3px solid var(--dourado);outline-offset:2px}
+.btn-buy[hidden]{display:none}
+.btn-buy--sm{width:auto;min-height:44px;margin:0;padding:9px 14px;font-size:14px;border-radius:12px;white-space:nowrap}
+.buy-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.buy-pair .btn-buy{font-size:14px;padding:10px 8px}
+.modal-actions .btn-buy{margin-top:0}
+
+.allkits{margin-top:56px;padding-top:44px;border-top:1px dashed rgba(201,160,92,.6)}
+.allkits-grid{display:grid;gap:18px}
+.ak-group{background:#fff;border:1px solid var(--petala);border-radius:var(--r-lg);padding:18px 18px 8px;box-shadow:var(--shadow-sm)}
+.ak-group h4{margin:0 0 6px;font-family:var(--f-title);font-size:24px;font-weight:600;color:var(--bordo)}
+.ak-group ul{list-style:none;margin:0;padding:0}
+.ak-group li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--sakura)}
+.ak-group li:first-child{border-top:0}
+.ak-name b{display:block;color:var(--grafite);font-size:16px;line-height:1.3}
+.ak-name small{display:block;color:var(--rose);font-size:13.5px}
+.ak-price{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ak-price b{color:var(--bordo);font-size:17px}
+.ak-price small{color:var(--grafite);opacity:.7;font-size:12.5px}
+@media (max-width:480px){
+  .ak-group li{grid-template-columns:minmax(0,1fr) auto;row-gap:8px}
+  .ak-group li .btn-buy{grid-column:1/-1;width:100%}
+}
+@media (min-width:860px){ .allkits-grid{grid-template-columns:1fr 1fr} }

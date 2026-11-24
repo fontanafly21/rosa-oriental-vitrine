@@ -61,6 +61,8 @@ window.SITE_CONFIG = {
       t20:  "https://ev.braip.com/ref?pl=plav4v6r&ck=cheze5we&af=afi659z0j3"  // Turbo 20 meses
     },
     payt: {
+      k4:   "https://ev.braip.com/campanhas/cpa/cam447px9", // Compre 3 leve 4 (doc CHECKOUTS — sem link Payt)
+      k6:   "https://ev.braip.com/campanhas/cpa/came0n8e7", // Compre 5 leve 6 (doc CHECKOUTS — sem link Payt)
       m1:   "https://seguro.payt.com.br/a/g0ey0pPXIP3YMoYn",
       m2:   "https://seguro.payt.com.br/a/PJe810PqcGXzrW7X",
       m3:   "https://seguro.payt.com.br/a/qGW918mXcpMEkWRk",

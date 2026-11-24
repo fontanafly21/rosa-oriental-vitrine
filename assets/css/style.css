@@ -825,3 +825,4 @@ html.has-cursor input[type=search],html.has-cursor input[type=text]{cursor:text!
   .ak-group li .btn-buy{grid-column:1/-1;width:100%}
 }
 @media (min-width:860px){ .allkits-grid{grid-template-columns:1fr 1fr} }
+.buy-label{margin:auto 0 0;font-size:14px;font-weight:700;color:var(--bordo)}

@@ -128,7 +128,15 @@
     if (!a) return;
     const href = buyHref(a.dataset.buy);
     if (!href) { e.preventDefault(); return; }
+    // upsell: ao escolher um kit, mostra o kit seguinte com a conta na mesa (1x por kit por sessão)
+    const up = a.dataset.up;
+    if (up && !a.closest(".modal") && UPSELL[up] && sess.get("ro_up_" + up) !== "1") {
+      e.preventDefault();
+      openUpsell(up, a.dataset.buy);
+      return;
+    }
     a.href = href;
+    store.set("ro_wa_clicked", "1");
     track("InitiateCheckout", { kit: a.dataset.buy, placement: a.closest(".modal") ? "modal" : a.closest(".allkits") ? "lista" : "card" });
   });
 
@@ -409,16 +417,16 @@
 
   /* ---------- 13 · FAQ (cap. 5.5) + schema ---------- */
   const FAQ = [
-    ["O Rosa Oriental é aprovado pela Anvisa?", "Suplemento alimentar é dispensado de registro pela RDC 240/18. O que se verifica é a autorização de funcionamento do fabricante — o número está no rodapé do site oficial (350750601-109-000050-1-0). Te envio o passo a passo para você conferir no portal da Anvisa."],
-    ["Qual a dose de cada ingrediente?", "A tabela nutricional completa está no rótulo do frasco — envio a foto pelo WhatsApp antes de qualquer compra."],
+    ["O Rosa Oriental é aprovado pela Anvisa?", "Suplemento alimentar é dispensado de registro pela RDC 240/18. O que se verifica é a autorização de funcionamento do fabricante — o número está no rodapé do site oficial (350750601-109-000050-1-0). Dá para conferir no portal de consultas da Anvisa."],
+    ["Qual a dose de cada ingrediente?", "A tabela nutricional completa está no rótulo do frasco."],
     ["Em quanto tempo vejo resultado?", "A marca informa 2-4 semanas para primeiros sinais e 6-8 semanas para efeitos maiores, com uso contínuo. Resultados variam de pessoa para pessoa — não prometemos data."],
     ["Quanto custa por mês?", "Do kit 5+1: R$ 74,50/mês. Do 3+1: R$ 86,75/mês. Do frasco único: R$ 207/mês (a pior conta — dizemos isso para você decidir bem)."],
-    ["Entrega mesmo? E se não chegar?", "Rastreio em até 72h pelos Correios. Se atrasar, eu acompanho o caso com a plataforma até resolver — entrega, reposição ou reembolso conforme os termos."],
+    ["Entrega mesmo? E se não chegar?", "Rastreio em até 72h pelos Correios. Se atrasar, o suporte da plataforma de pagamento acompanha o caso — entrega, reposição ou reembolso conforme os termos."],
     ["É igual a Botox?", "Não — são categorias diferentes. Suplemento é parte de rotina e age de dentro para fora; procedimento é intervenção médica. Um não substitui o outro."],
     ["Funciona mesmo? Tem depoimento?", "Publicamos apenas depoimentos autorizados por escrito, do jeito que a cliente escreveu. E a regra vale sempre: resultados variam de pessoa para pessoa."],
-    ["E se não funcionar? Reembolsa?", "A garantia que vale é a escrita no checkout — enviamos o print da tela de compra antes de você pagar. Não prometemos além do que está lá."],
-    ["Posso tomar com remédio?", "Essa resposta é do seu médico ou nutricionista. Enviamos a foto do rótulo completo para você levar à consulta — não orientamos uso por conta própria."],
-    ["Achei mais barato no Mercado Livre", "Podem existir anúncios lá — o que é verificável é isto: garantia, brinde e suporte valem na compra pelo canal oficial. Se preferir comparar, enviamos as condições lado a lado."],
+    ["E se não funcionar? Reembolsa?", "A garantia que vale é a escrita no checkout — confira a tela de compra antes de pagar. Não prometemos além do que está lá."],
+    ["Posso tomar com remédio?", "Essa resposta é do seu médico ou nutricionista. Leve o rótulo completo do frasco à consulta — não orientamos uso por conta própria."],
+    ["Achei mais barato no Mercado Livre", "Podem existir anúncios lá — o que é verificável é isto: garantia, brinde e suporte valem na compra pelo canal oficial. Compare as condições do checkout antes de decidir."],
   ];
   const faqList = $("#faq-list");
   if (!faqList.children.length) faqList.innerHTML = FAQ.map(([q, a], i) => `
@@ -523,29 +531,29 @@
       if (since("ro_pop_welcome") < 24 * H) return;
       if (show("welcome", `${blossom}
         <h3 id="modal-title">Oi! Aqui você encontra:</h3>
-        <p>a conta por mês de cada kit, como funciona a entrega e o atendimento direto comigo. Quer ir direto ao que interessa?</p>
+        <p>a conta por mês de cada kit, como funciona a entrega e o link oficial de compra. Quer ir direto ao que interessa?</p>
         <div class="modal-actions">
           <a class="modal-link" href="#kits" data-close>Ver custo mensal</a>
           <a class="modal-link" href="#entrega" data-close>Como funciona a entrega</a>
-          <a class="btn-wa btn-wa--block" data-wa="welcome" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Falar no WhatsApp</span></a>
+          <a class="btn-wa btn-wa--block" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver todos os kits</span></a>
         </div>`)) store.set("ro_pop_welcome", String(Date.now()));
     }
     function exit() {
       if (since("ro_pop_exit") < 48 * H) return;
       if (show("exit", `${blossom}
         <h3 id="modal-title">Antes de ir…</h3>
-        <p>Te mando a tabela completa de custo mensal e a foto do rótulo — sem compromisso?</p>
+        <p>A conta por mês de cada kit e o link oficial de compra estão logo aqui — sem compromisso.</p>
         <div class="modal-actions">
-          <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="exit" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Receber no WhatsApp</span></a>
+          <a class="btn-wa btn-wa--block btn-wa--lg" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver os kits</span></a>
           <button class="modal-dismiss" data-close type="button">Não, obrigada</button>
         </div>`)) store.set("ro_pop_exit", String(Date.now()));
     }
     function reminder() {
       if (show("lembrete", `${blossom}
         <h3 id="modal-title">Que bom te ver de novo</h3>
-        <p>Fiquei com sua dúvida pela metade — se ainda fizer sentido, me chama e a gente conversa sem pressa.</p>
+        <p>Os kits e os links oficiais de compra continuam aqui, sem pressa.</p>
         <div class="modal-actions">
-          <a class="btn-wa btn-wa--block" data-wa="lembrete" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Continuar a conversa</span></a>
+          <a class="btn-wa btn-wa--block" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver os kits</span></a>
           <button class="modal-dismiss" data-close type="button">Agora não</button>
         </div>`)) store.set("ro_pop_reminder", String(Date.now()));
     }
@@ -609,7 +617,7 @@
       }
       const key = ans.orcamento === "completo" ? "5+1" : ans.orcamento === "pequeno" ? "1" : "3+1";
       const K = KITS[key];
-      const poNote = ans.pratica === "po" ? `<p><b>Sendo honesto:</b> se preparar pó não te incomoda, vale comparar com os pós de farmácia (R$ 79 a R$ 235/mês). Sem vencedor pronto — eu te mando a tabela lado a lado.</p>` : "";
+      const poNote = ans.pratica === "po" ? `<p><b>Sendo honesto:</b> se preparar pó não te incomoda, vale comparar com os pós de farmácia (R$ 79 a R$ 235/mês). Sem vencedor pronto — a comparação lado a lado está na seção de custo por mês.</p>` : "";
       body.innerHTML = `<div class="confetti" id="confetti"></div><div class="quiz-result">
         <p class="quiz-q">Minha sugestão honesta</p>
         <span class="quiz-kit" id="modal-title">${K.name}</span>
@@ -617,9 +625,7 @@
         <p class="quiz-month">${K.month}</p>
         <div class="quiz-why"><p>${ROT[ans.rotina] || ""} ${K.why}</p>${poNote}</div>
         <p class="quiz-qual">Resultados variam de pessoa para pessoa. Suplemento não substitui alimentação equilibrada nem acompanhamento profissional.</p>
-        <p style="margin:16px 0 10px"><b>Quer conversar sobre esse kit?</b></p>
-        <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="${K.wa}" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Conversar no WhatsApp</span></a>
-        <a class="btn-buy" data-buy="${K.buy}" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Comprar no checkout oficial</span></a>
+        <a class="btn-wa btn-wa--block btn-wa--lg" style="margin-top:16px" data-buy="${K.buy}" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Comprar o ${K.name} no checkout</span></a>
         <button class="quiz-redo" type="button" id="quiz-redo">Refazer o quiz</button>
       </div>`;
       bindWa(body); bindBuy(body);
@@ -653,6 +659,7 @@
     "kit-16":  { name: "Kit 16 meses + brinde", frascos: 16, price: 1097, month: 68.56, img: null, gift: true },
   };
   const BUY_KEY = { "kit-1": "m1", "kit-3+1": "k4", "kit-5+1": "k6", "kit-9": "m9" };
+  const GIFT_KEYS = { "kit-12": ["c12", "ms12"], "kit-16": ["c16", "ms16"] };
   const UPSELL = {
     "kit-1":   { to: "kit-3+1", why: "Um frasco dura 1 mês, e a marca informa o ciclo de 6-8 semanas. Com o 3+1 você cobre o ciclo inteiro e o custo por mês cai mais da metade." },
     "kit-3+1": { to: "kit-5+1", why: "Com mais 2 frascos você chega a 6 meses de rotina e o 5+1 passa a ter o menor custo por mês entre os kits de entrada." },
@@ -701,7 +708,7 @@
     });
   })();
 
-  function openUpsell(from) {
+  function openUpsell(from, keepKey) {
     const U = UPSELL[from], A = KIT_INFO[from], B = KIT_INFO[U.to];
     const diff = B.price - A.price, extra = B.frascos - A.frascos;
     const perExtra = diff / extra;
@@ -728,9 +735,9 @@
         <p class="upm-math">São <b>+${brl(diff)}</b> por <b>${extra} ${extra > 1 ? "frascos a mais" : "frasco a mais"}</b>${B.gift && !A.gift ? " e o brinde" : ""} — ${brl(Math.round(perExtra * 100) / 100)} por frasco extra.</p>
         <p class="upm-why">${U.why}</p>
         <div class="modal-actions">
-          <a class="btn-wa btn-wa--block btn-wa--lg" data-wa="${U.to}" data-upsell="accept" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Quero o ${B.name}</span></a>
-          ${BUY_KEY[U.to] ? `<a class="btn-buy" data-buy="${BUY_KEY[U.to]}" data-upsell="accept" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Comprar o ${B.name} no checkout</span></a>` : ""}
-          <a class="modal-link" data-wa="${from}" data-upsell="keep" href="#" target="_blank" rel="noopener">Continuar com o ${A.name}</a>
+          ${BUY_KEY[U.to] ? `<a class="btn-wa btn-wa--block btn-wa--lg" data-buy="${BUY_KEY[U.to]}" data-upsell="accept" href="#kits" rel="noopener"><svg><use href="#i-cart"/></svg><span>Quero o ${B.name}</span></a>` : ""}
+          ${GIFT_KEYS[U.to] ? `<div class="buy-pair"><a class="btn-wa" data-buy="${GIFT_KEYS[U.to][0]}" data-upsell="accept" href="#kits" rel="noopener"><span>${B.name.replace(" + brinde", "")} + creme</span></a><a class="btn-wa" data-buy="${GIFT_KEYS[U.to][1]}" data-upsell="accept" href="#kits" rel="noopener"><span>${B.name.replace(" + brinde", "")} + massageador</span></a></div>` : ""}
+          <a class="modal-link" data-buy="${keepKey || BUY_KEY[from] || ""}" data-upsell="keep" href="#kits" rel="noopener">Continuar com o ${A.name}</a>
         </div>
         <p class="quiz-qual">Condição vigente conforme o checkout oficial. Resultados variam de pessoa para pessoa.</p>
       </div>`;
@@ -750,7 +757,7 @@
       <h3 id="modal-title">Colágeno em cápsula ou em pó: o que comparar antes de pagar</h3>
       <p>Cápsula e pó não são rivais — são formas diferentes de encaixar o mesmo hábito na rotina. Em vez de perguntar “qual é melhor?”, compare três coisas:</p>
       <h4>1. Dose publicada</h4>
-      <p>Os pós costumam publicar a dose na própria página — 2,5 g por porção é o padrão observado na categoria. No Rosa Oriental, a tabela nutricional completa está no rótulo do frasco. Ponto para o pó em transparência de página; por isso eu envio a foto do rótulo antes de qualquer compra.</p>
+      <p>Os pós costumam publicar a dose na própria página — 2,5 g por porção é o padrão observado na categoria. No Rosa Oriental, a tabela nutricional completa está no rótulo do frasco. Ponto para o pó em transparência de página; por isso vale conferir o rótulo do frasco.</p>
       <h4>2. Rotina</h4>
       <p>Pó pede medir, misturar e beber todos os dias. Cápsula é uma por dia, sem preparo e sem gosto. A pergunta certa é: qual dos dois você vai conseguir manter por 2 meses seguidos?</p>
       <h4>3. Custo por mês</h4>
@@ -758,7 +765,7 @@
       <h4>Antes de pagar, em qualquer marca</h4>
       <ul><li>Consigo ver a composição e a dose (na página ou no rótulo)?</li><li>Quem vende tem CNPJ visível?</li><li>A garantia está escrita no checkout?</li><li>Existe rastreio com prazo informado?</li></ul>
       <p class="quiz-qual">Resultados variam de pessoa para pessoa. Suplemento não substitui alimentação equilibrada nem acompanhamento profissional.</p>
-      <a class="btn-wa btn-wa--block" data-wa="tabela" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Receber a tabela completa</span></a></article>`,
+      <a class="btn-wa btn-wa--block" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver os kits</span></a></article>`,
     conta: `<article class="article"><span class="read-tag">A conta</span>
       <h3 id="modal-title">Fiz a conta: quanto custa 1 mês de cada opção de colágeno</h3>
       <p>Preço de kit engana. O número que importa é quanto sai <b>por mês</b> — e quanto você paga a mais se parcelar.</p>
@@ -782,12 +789,12 @@
       <p>A marca descreve o colágeno como “de origem japonesa”. Isso é como a marca apresenta o produto — e eu repito com essa ressalva. O que dá para verificar de fato está no <b>rótulo</b>: composição, fabricante e número de autorização.</p>
       <h4>Então como escolher?</h4>
       <p>Não compre nenhum suplemento pela palavra “japonês”, “importado” ou “premium”. Compre pelo que dá para conferir: rótulo, CNPJ, rastreio e garantia escrita no checkout. Estética é um bônus; conferência é o que protege seu dinheiro.</p>
-      <a class="btn-wa btn-wa--block" data-wa="rotulo" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Pedir a foto do rótulo</span></a></article>`,
+      <a class="btn-wa btn-wa--block" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver os kits</span></a></article>`,
     estudos: `<article class="article"><span class="read-tag">Em preparação</span>
       <h3 id="modal-title">O que os estudos sobre colágeno oral realmente mostram</h3>
       <p>Este texto está sendo escrito com as fontes na mão — porque um assunto desses não merece resumo apressado nem promessa.</p>
       <p>Enquanto isso, a regra continua a mesma: resultados variam de pessoa para pessoa, e quem garante resultado não está sendo honesto com você.</p>
-      <a class="btn-wa btn-wa--block" data-wa="default" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Me avise quando sair</span></a></article>`,
+      <a class="btn-wa btn-wa--block" href="#todos-os-kits" data-close><svg><use href="#i-cart"/></svg><span>Ver os kits</span></a></article>`,
   };
   $$("[data-article]").forEach((b) => b.addEventListener("click", () => {
     const id = b.dataset.article;
